@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and Compression</title>
+</head>
+<body>
+    <h1>Upload an Image for Compression</h1>
+    
+    <!-- Form to upload the image with options -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="imageFile">Select Image:</label>
+        <input type="file" id="imageFile" name="image" accept="image/*" required><br><br>
+
+        <label for="width">Resize Width (pixels):</label>
+        <input type="number" id="width" name="width" placeholder="Optional"><br><br>
+
+        <label for="format">Select Format:</label>
+        <select id="format" name="format">
+            <option value="jpeg">JPEG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+        </select><br><br>
+
+        <label for="quality">Quality (1-100):</label>
+        <input type="number" id="quality" name="quality" min="1" max="100" value="80"><br><br>
+
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <!-- Display the result and download option -->
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the form from reloading the page
+
+            const fileInput = document.getElementById('imageFile');
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            formData.append('width', document.getElementById('width').value);
+            formData.append('format', document.getElementById('format').value);
+            formData.append('quality', document.getElementById('quality').value);
+
+            try {
+                // Send the image to the backend server
+                const response = await fetch('http://192.168.1.100:9001/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = `
+                        <p>Image processed successfully!</p>
+                        <p><a href="http://192.168.1.100:9001/download/${result.file.split('/').pop()}" download>Download the compressed image</a></p>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Error: ${result.message}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
