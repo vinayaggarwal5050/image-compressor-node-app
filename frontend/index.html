@@ -45,7 +45,7 @@
 
             try {
                 // Send the image to the backend server
-                const response = await fetch('http://192.168.1.100:9001/upload', {
+                const response = await fetch('http://localhost:80/upload', {
                     method: 'POST',
                     body: formData
                 });
@@ -55,7 +55,7 @@
                 if (response.ok) {
                     document.getElementById('result').innerHTML = `
                         <p>Image processed successfully!</p>
-                        <p><a href="http://192.168.1.100:9001/download/${result.file.split('/').pop()}" download>Download the compressed image</a></p>
+                        <p><a href="http://localhost:80/download/${result.file.split('/').pop()}" download>Download the compressed image</a></p>
                     `;
                 } else {
                     document.getElementById('result').innerHTML = `<p>Error: ${result.message}</p>`;
